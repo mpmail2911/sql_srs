@@ -1,0 +1,15 @@
+name: check_code_quality
+on: pull_request # moment ou on decleche
+jobs:
+  black:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3 #pour autoriser black d acceder au repo
+      - uses: actions/setup-python@v4
+        with:
+          python
+bash multilignes
+          python -m install --upgrade pip
+          pip install black
+      - run: |
+          black --check --verbose .
