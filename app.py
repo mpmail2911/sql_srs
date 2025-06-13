@@ -24,13 +24,9 @@ SELECT * FROM beverages
 CROSS JOIN food_items
 """
 
-solution = duckdb.sql(answer).df()
+solution = duckdb.nswer).df()
 
-st.header("enter your code:")
-query = st.text_area(label="votre code SQL ici", key="user_input")
-
-if query:
-    result = duckdb.sql(query).df()
+st.header("enter yo
     st.dataframe(result)
 tab2, tab3 = st.tabs(["Tables", "Solution"])
 
