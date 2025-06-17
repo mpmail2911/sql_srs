@@ -16,16 +16,28 @@ if "exercises_sql_tables.duckdb" not in os.listdir("data"):
 
 con = duckdb.connect(database="data/exercises_sql_tables.duckdb", read_only=False)
 
-with (st.sidebar):
+with st.sidebar:
+    available_themes_df = con.execute("SELECT DISTINCT theme from memory_state").df()
     theme = st.selectbox(
         "What would you like to review?",
-        ("cross_joins", "GroupBy", "window_functions"),
+        available_themes_df("theme").unique(),
         index=None,
         placeholder="Select a theme",
     )
-    st.write("You selected:", theme)
 
-    exercise = con.execute(f"SELECT * FROM memory_state WHERE theme = '{theme}'").df().sort_values("last_reviewed").reset_index()
+    if theme:
+        st.write(f"You selected {theme}")
+        select_exercise_query = f"SELECT * FROM memory_state WHERE theme = '{theme}'"
+    else:
+        select_exercise_query = f"SELECT * FROM memory_state"
+
+    exercise = (
+        con.execute(select_exercise_query)
+        .df()
+        .sort_values("last_reviewed")
+        .reset_index(drop=True)
+        )
+
     st.write(exercise)
 
     exercise_name = exercise.loc[0, "exercise_name"]
@@ -36,7 +48,6 @@ with (st.sidebar):
 
 st.header("enter your code:")
 query = st.text_area(label="votre code SQL ici", key="user_input")
-
 
 if query:
     result = con.execute(query).df()
@@ -51,7 +62,7 @@ except KeyError as e:
 n_lines_difference = result.shape[0] - solution_df.shape[0]
 if n_lines_difference != 0:
     st.write(
-        f"result has a {n_lines_difference} lines difference with the solution"
+        f"result has a {n_lines_difference} lines difference with the solution_df"
     )
 
 
